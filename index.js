@@ -1,29 +1,47 @@
 const qrcode = require('qrcode-terminal');
-const naipes = ["ouros", "copas", "espadas", "paus"];
-const valores = ["Ás", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Valete", "Rainha", "Rei"];
 
 
 const { Client } = require('whatsapp-web.js');
-const { Dado, Cartas } = require('./ResFunctions');
+const { Dado, Cartas, MultipleDados, Piada, Significado } = require('./ResFunctions');
+const { Dog } = require('./utilities/Copys');
 const client = new Client();
 
 client.on('qr', qr => {
     qrcode.generate(qr, {small: true});
 });
-
+console.log(` ZAP BOT - BY VECTOR
+  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣶⣶⣶⣶⣶⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+   ⠀⠀⠀⠀⠀⠀⣠⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣄⡀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⣠⣴⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣮⣵⣄⠀⠀⠀
+     ⠀⠀⢾⣻⣿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⡀⠀
+      ⠀⠸⣽⣻⠃⣿⡿⠋⣉⠛⣿⣿⣿⣿⣿⣿⣿⣿⣏⡟⠉⡉⢻⣿⡌⣿⣳⡥⠀
+       ⠀⢜⣳⡟⢸⣿⣷⣄⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣠⣼⣿⣇⢸⢧⢣⠀
+        ⠀⠨⢳⠇⣸⣿⣿⢿⣿⣿⣿⣿⡿⠿⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⠀⡟⢆⠀
+         ⠀⠀⠈⠀⣾⣿⣿⣼⣿⣿⣿⣿⡀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣽⣿⣿⠐⠈⠀⠀
+          ⠀⢀⣀⣼⣷⣭⣛⣯⡝⠿⢿⣛⣋⣤⣤⣀⣉⣛⣻⡿⢟⣵⣟⣯⣶⣿⣄⡀⠀
+           ⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣶⣶⣾⣶⣶⣴⣾⣿⣿⣿⣿⣿⣿⢿⣿⣿⣧
+            ⣿⣿⣿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⣿⡿
+            O QR code está sendo gerado.
+            Powered by Whatsapp-Web.js!
+            `)
 client.on('ready', () => {
-    console.log('Client is ready!');
+    console.log('Servidor pronto!');
 });
 
-client.on('message', message => {
+client.on('message_create', async message => {
     const MSGNORMALIZED = message.body.toUpperCase() 
-    if (MSGNORMALIZED.startsWith('!DADO')) {
-        client.sendMessage(message.from,Dado(MSGNORMALIZED))
+    if (MSGNORMALIZED.startsWith('!DADO') && !MSGNORMALIZED.startsWith('!DADOS')) {
+        client.sendMessage(message.from, Dado(MSGNORMALIZED))
     } else if (MSGNORMALIZED.startsWith('!CARTAS')) {
-        client.sendMessage(message.from,Cartas(MSGNORMALIZED))
-    }
-    else if (message.body === '!teste') {
-        client.sendMessage(message.from,'Teste')
+        client.sendMessage(message.from, Cartas(MSGNORMALIZED))
+    } else if (MSGNORMALIZED.startsWith('!DADOS')) {
+        client.sendMessage(message.from,MultipleDados(MSGNORMALIZED))
+    } else if (MSGNORMALIZED === '!PIADA') {
+        client.sendMessage(message.from,Piada())
+    } else if (MSGNORMALIZED.startsWith('!SIGNIFICADO')) {
+        client.sendMessage(message.from, await Significado(MSGNORMALIZED))
+    } else if (MSGNORMALIZED === '!DOG') {
+        client.sendMessage(message.from, Dog)
     }
 })
 
