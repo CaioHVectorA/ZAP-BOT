@@ -8,9 +8,13 @@ const client = new Client({
     authStrategy: new LocalAuth()
 });
 
-client.on('qr', qr => {
-    qrcode.generate(qr, {small: true});
-});
+client.on('auth_failure', message => {
+    console.log(message)
+})
+client.on('authenticated', () => console.log('Autenticou!!!'))
+// client.on('qr', qr => {
+//     qrcode.generate(qr, {small: true});
+// });
 console.log(` ZAP BOT - BY VECTOR
   ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣶⣶⣶⣶⣶⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
    ⠀⠀⠀⠀⠀⠀⣠⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣄⡀⠀⠀⠀⠀⠀
