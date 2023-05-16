@@ -1,5 +1,8 @@
 const { default: axios } = require("axios")
 const piadas = require("./utilities/Piadas")
+const fatosInteressantes = require("./utilities/FatosInteressantes")
+const Escada = require("./utilities/Escada")
+
 
 
 const ErrorNotSpaced = (type) => {return `Ocorreu um Erro: O comando utiliza espaço, não junto. Exemplo: !${type} 6 !${type} 20`}
@@ -138,6 +141,20 @@ const Functions = {
                 return Response
             })
         }
+    },
+    Fatos: () => {
+        console.log('Rodando função de Fatos')
+        const length = fatosInteressantes.length
+        const index = Math.floor(Math.random() * length)
+        console.log(index)
+        const Fato = fatosInteressantes[index]
+        console.log('Fato extraído:',Fato)
+        return Fato
+    },
+    EscadaFunc: (MSGNORMALIZED) => {
+        console.log('Rodando função escada')
+        const num = MSGNORMALIZED.split(' ')[1]
+        return Escada(num)
     }
 }
 

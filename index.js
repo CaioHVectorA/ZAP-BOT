@@ -2,19 +2,25 @@ const qrcode = require('qrcode-terminal');
 
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const { Dado, Cartas, MultipleDados, Piada, Significado } = require('./ResFunctions');
+const { Dado, Cartas, MultipleDados, Piada, Significado, Fatos, EscadaFunc } = require('./ResFunctions');
 const { Dog } = require('./utilities/Copys');
-const client = new Client({
-    authStrategy: new LocalAuth()
-});
+const getComandos = require('./utilities/ComandosHelper');
+const fatosInteressantes = require('./utilities/FatosInteressantes');
+const Escada = require('./utilities/Escada');
+
+// const client = new Client({
+//     authStrategy: new LocalAuth()
+// });
+
+const client = new Client()
 
 client.on('auth_failure', message => {
-    console.log(message)
+    console.log('teste')
 })
 client.on('authenticated', () => console.log('Autenticou!!!'))
-// client.on('qr', qr => {
-//     qrcode.generate(qr, {small: true});
-// });
+client.on('qr', qr => {
+    qrcode.generate(qr, {small: true});
+});
 console.log(` ZAP BOT - BY VECTOR
   ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣶⣶⣶⣶⣶⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
    ⠀⠀⠀⠀⠀⠀⣠⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣄⡀⠀⠀⠀⠀⠀
@@ -33,9 +39,12 @@ console.log(` ZAP BOT - BY VECTOR
 client.on('ready', () => {
     console.log('Servidor pronto!');
 });
-
 client.on('message_create', async message => {
-    const MSGNORMALIZED = message.body.toUpperCase() 
+    const MSGNORMALIZED = message.body.toUpperCase()
+    if (MSGNORMALIZED.startsWith('!ESCADA')) {
+        message.reply(EscadaFunc(MSGNORMALIZED))
+    } 
+    if (MSGNORMALIZED === '!COMANDOS') {message.reply(getComandos())}
     if (MSGNORMALIZED.startsWith('!DADO') && !MSGNORMALIZED.startsWith('!DADOS')) {
         client.sendMessage(message.from, Dado(MSGNORMALIZED))
     } else if (MSGNORMALIZED.startsWith('!CARTAS')) {
@@ -48,6 +57,8 @@ client.on('message_create', async message => {
         client.sendMessage(message.from, await Significado(MSGNORMALIZED))
     } else if (MSGNORMALIZED === '!DOG') {
         client.sendMessage(message.from, Dog)
+    } else if (MSGNORMALIZED === '!FATOS') {
+        client.sendMessage(message.from, Fatos())
     }
 })
 
