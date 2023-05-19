@@ -2,7 +2,7 @@ const qrcode = require('qrcode-terminal');
 
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const { Dado, Cartas, MultipleDados, Piada, Significado, Fatos, EscadaFunc, Pokemon } = require('./ResFunctions');
+const { Dado, Cartas, MultipleDados, Piada, Significado, Fatos, EscadaFunc, Pokemon, Clima } = require('./ResFunctions');
 const { Dog } = require('./utilities/Copys');
 const getComandos = require('./utilities/ComandosHelper');
 const fatosInteressantes = require('./utilities/FatosInteressantes');
@@ -72,16 +72,12 @@ client.on('message_create', async message => {
         })
         // client.sendMessage(message.from, await Pokemon(MSGNORMALIZED))
         // Pokemon(MSGNORMALIZED,message.from,client.sen)
+    } else if (MSGNORMALIZED.startsWith('!CLIMA')) {
+        client.sendMessage(message.from, await Clima(MSGNORMALIZED))
     }
 })
-// Pokemon('!Pokemon Mewtwo')
-// async function Teste() {
-//     const teste = await Pokemon('!Pokemon Mewtwo')
-//     return teste
-// }
 
-Pokemon('!Pokemon mewtwo').then(Response => console.log(Response))
-
+Clima('!Clima Rio de Janeiro').then(Response => console.log(Response))
 
 client.initialize();
  

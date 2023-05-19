@@ -191,6 +191,54 @@ Status:
             console.log(err)
             return `Ocorreu um erro. Pokemon não encontrado!`
         })
+    },
+    Clima: async (MSGNORMALIZED) => {
+        if (!MSGNORMALIZED.includes(' ')) {return `Você não enviou espaços! Utilize !Clima <Cidade>`}
+    const API_KEY = 'be2b1d571d2242daa7cb5a3c859e71bb'
+    // https://api.openweathermap.org/data/2.5/weather?q=Bauru&appid=be2b1d571d2242daa7cb5a3c859e71bb&lang=pt_br
+    const breakText = MSGNORMALIZED.split(' ')
+    if (breakText.length === 2) {
+        return fetch(`https://api.openweathermap.org/data/2.5/weather?q=${breakText[1]}&appid=${API_KEY}&lang=pt_br`).then(Response => {
+            return Response.json().then(data => {
+                const temperatura = Math.floor(data.main.temp - 273.15)
+                const termica = Math.floor(data.main.feels_like - 273.15)
+                const min = Math.floor(data.main.temp_min - 273.15)
+                const max = Math.floor(data.main.temp_max - 273.15)
+                const country = data.sys.country
+                const umidade = data.main.humidity
+                const tempo = data.weather.description
+                return `Agora em ${breakText[1]},${country} está atualmente ${temperatura}° com sensação térmica de ${termica}°. A umidade é de ${umidade}%; A temperatura mínima é de ${min}°, já a máxima é de ${max}°.`
+            })
+        }).catch(err => {
+            console.log(err)
+            return `Ocorreu um erro. Não reconheci a cidade!`
+        })
+    } else {
+        const txtArr = []
+        breakText.forEach((txt, index) => {
+            if (index !== 0) {
+                txtArr.push(txt)
+            }
+        });
+        const city = txtArr.join(' ')
+        console.log(city)
+        return fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&lang=pt_br`).then(Response => {
+            return Response.json().then(data => {
+                const temperatura = Math.floor(data.main.temp - 273.15)
+                const termica = Math.floor(data.main.feels_like - 273.15)
+                const min = Math.floor(data.main.temp_min - 273.15)
+                const max = Math.floor(data.main.temp_max - 273.15)
+                const country = data.sys.country
+                const umidade = data.main.humidity
+                const tempo = data.weather.description
+                return `Agora em ${city},${country} está atualmente ${temperatura}° com sensação térmica de ${termica}°. A umidade é de ${umidade}%; A temperatura mínima é de ${min}°, já a máxima é de ${max}°.`
+            })
+        }).catch(err => {
+            console.log(err)
+            return `Ocorreu um erro. Não reconheci a cidade!`
+        })
+        // fetch('')
+    }
     }
 }
 
