@@ -12,6 +12,8 @@ function getComandos() {
 *!Significado <Palavra>* - Eu busco no meu dicionário o significado da palavra em português que enviar. Eu posso enviar vários significados também!
 
 *!Cartas <Numero>* - Eu envio um punhado de cartas a partir do número que escolher. Pode ser ouros, copas, espadas, paus. Eu só tenho 52 cartas!
+
+*!Pokemon <Nome>* OU *!Pokemon <Numero>* - Eu envio o pokemon que você solicitar!
         `
     )
 }

@@ -2,18 +2,16 @@ const qrcode = require('qrcode-terminal');
 
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const { Dado, Cartas, MultipleDados, Piada, Significado, Fatos, EscadaFunc } = require('./ResFunctions');
+const { Dado, Cartas, MultipleDados, Piada, Significado, Fatos, EscadaFunc, Pokemon } = require('./ResFunctions');
 const { Dog } = require('./utilities/Copys');
 const getComandos = require('./utilities/ComandosHelper');
 const fatosInteressantes = require('./utilities/FatosInteressantes');
 const Escada = require('./utilities/Escada');
+const downloadImage = require('./utilities/DownloadImage');
 
-// const client = new Client({
-//     authStrategy: new LocalAuth()
-// });
-
-const client = new Client()
-
+const client = new Client({
+    // authStrategy: new LocalAuth()
+})
 client.on('auth_failure', message => {
     console.log('teste')
 })
@@ -40,7 +38,11 @@ client.on('ready', () => {
     console.log('Servidor pronto!');
 });
 client.on('message_create', async message => {
-    const MSGNORMALIZED = message.body.toUpperCase()
+    let MSGNORMALIZED;
+    // if (!message.hasMedia) {
+    //     MSGNORMALIZED = message.body.toUpperCase();
+    // }
+    MSGNORMALIZED = message.body.toUpperCase();
     if (MSGNORMALIZED.startsWith('!ESCADA')) {
         message.reply(EscadaFunc(MSGNORMALIZED))
     } 
@@ -59,8 +61,27 @@ client.on('message_create', async message => {
         client.sendMessage(message.from, Dog)
     } else if (MSGNORMALIZED === '!FATOS') {
         client.sendMessage(message.from, Fatos())
+    } else if (MSGNORMALIZED.startsWith('!POKEMON')) {
+        // console.log(await Pokemon(MSGNORMALIZED))
+        // Pokemon().then(Response => )
+        Pokemon(MSGNORMALIZED).then(Response => {
+            console.log(Response)
+            client.sendMessage(message.from,Response.media,{
+                caption: Response.caption
+            })
+        })
+        // client.sendMessage(message.from, await Pokemon(MSGNORMALIZED))
+        // Pokemon(MSGNORMALIZED,message.from,client.sen)
     }
 })
+// Pokemon('!Pokemon Mewtwo')
+// async function Teste() {
+//     const teste = await Pokemon('!Pokemon Mewtwo')
+//     return teste
+// }
+
+Pokemon('!Pokemon mewtwo').then(Response => console.log(Response))
+
 
 client.initialize();
  

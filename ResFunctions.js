@@ -2,8 +2,10 @@ const { default: axios } = require("axios")
 const piadas = require("./utilities/Piadas")
 const fatosInteressantes = require("./utilities/FatosInteressantes")
 const Escada = require("./utilities/Escada")
+const downloadImage = require("./utilities/DownloadImage")
+const { MessageMedia } = require("whatsapp-web.js")
 
-
+const fs = require('fs')
 
 const ErrorNotSpaced = (type) => {return `Ocorreu um Erro: O comando utiliza espaço, não junto. Exemplo: !${type} 6 !${type} 20`}
 const ErrorNotNumber = (type) => {return `Ocorreu um Erro: O comando ${type} requer que você envie um número. Exemplo: !${type} 6 !${type} 20 !${type} 100`}
@@ -153,8 +155,42 @@ const Functions = {
     },
     EscadaFunc: (MSGNORMALIZED) => {
         console.log('Rodando função escada')
+        console.log(MSGNORMALIZED)
         const num = MSGNORMALIZED.split(' ')[1]
         return Escada(num)
+    },
+    Pokemon: async (MSGNORMALIZED) => {
+        console.log('Rodando Função Pokemon')
+        const pokemon = MSGNORMALIZED.split(' ')[1].toLowerCase()
+        return axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon}`).then(Response => {
+            const { name, abilities,id, stats,sprites } = Response.data
+            const {front_default} = sprites 
+            const arrSkills = []
+            abilities.forEach(skill => {
+                arrSkills.push(`${skill.is_hidden ? '*' : ''}${skill.ability.name}${skill.is_hidden ? '*' : ''}`)
+            });
+            const HabilidadesRes = arrSkills.join('\n')
+            const responseMSG = `Você buscou o pokemon: ${name} #${id}
+Habilidades: 
+    ${HabilidadesRes}
+Status: 
+    HP:  ${stats[0].base_stat}
+    Atk: ${stats[1].base_stat}
+    Def: ${stats[2].base_stat}
+    SpA: ${stats[3].base_stat}
+    SpD: ${stats[4].base_stat}
+    Spe: ${stats[5].base_stat}
+            `
+            // return downloadImage(front_default,'./data/image.png').then(Response => {
+                return MessageMedia.fromUrl(front_default).then(Response => {
+                    const response = {media: Response, caption: responseMSG}
+                    // console.log(response.media)
+                    return response
+                })
+        }).catch(err => {
+            console.log(err)
+            return `Ocorreu um erro. Pokemon não encontrado!`
+        })
     }
 }
 
