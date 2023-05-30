@@ -4,7 +4,7 @@ const fatosInteressantes = require("./utilities/FatosInteressantes")
 const Escada = require("./utilities/Escada")
 const downloadImage = require("./utilities/DownloadImage")
 const { MessageMedia } = require("whatsapp-web.js")
-
+const CepFunc = require('cep-promise')
 const fs = require('fs')
 
 const ErrorNotSpaced = (type) => {return `Ocorreu um Erro: O comando utiliza espaço, não junto. Exemplo: !${type} 6 !${type} 20`}
@@ -161,6 +161,7 @@ const Functions = {
     },
     Pokemon: async (MSGNORMALIZED) => {
         console.log('Rodando Função Pokemon')
+        if (!MSGNORMALIZED.split(' ')[1]) { return `Você não providenciou um pokemon.`}
         const pokemon = MSGNORMALIZED.split(' ')[1].toLowerCase()
         return axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon}`).then(Response => {
             const { name, abilities,id, stats,sprites } = Response.data
@@ -239,6 +240,17 @@ Status:
         })
         // fetch('')
     }
+    },
+    Cep: async (MSGNORMALIZED) => {
+        if (!MSGNORMALIZED.includes(' ')) {return `Você não enviou espaço! Envie !cep <Número>`}
+        const input = MSGNORMALIZED.split(' ')[1]
+        let cep;
+        try {
+         cep = await CepFunc(input)
+        } catch (error) {
+            return `Erro: ${error.errors[0].message}`
+        }
+        return cep
     }
 }
 
