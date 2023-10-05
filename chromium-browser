@@ -1,0 +1,70 @@
+#!/bin/sh
+if ! [ -x /snap/bin/chromium ]; then
+    echo "" >&2
+    echo "Command '$0' requires the chromium snap to be installed." >&2
+    echo "Please install it with:" >&2
+    echo "" >&2
+    echo "snap install chromium" >&2
+    echo "" >&2
+    exit 1
+fi
+
+if [ "$(xdg-settings get default-web-browser)" = "chromium-browser.desktop" ]; then
+  xdg-settings set default-web-browser chromium_chromium.desktop
+fi
+
+# GNOME Shell
+OLD="chromium-browser.desktop"
+NEW="chromium_chromium.desktop"
+FAVS=$(gsettings get org.gnome.shell favorite-apps 2> /dev/null)
+if echo "$FAVS" | grep -q "'$OLD'"; then
+  NEWFAVS=$(echo $FAVS | sed -e "s#'$OLD'#'$NEW'#")
+  gsettings set org.gnome.shell favorite-apps "$NEWFAVS"
+fi
+
+# Unity
+OLD="application://chromium-browser.desktop"
+NEW="application://chromium_chromium.desktop"
+FAVS=$(gsettings get com.canonical.Unity.Launcher favorites 2> /dev/null)
+if echo "$FAVS" | grep -q "'$OLD'"; then
+  NEWFAVS=$(echo $FAVS | sed -e "s#'$OLD'#'$NEW'#")
+  gsettings set com.canonical.Unity.Launcher favorites "$NEWFAVS"
+fi
+
+# MATE
+OLD="/usr/share/applications/chromium-browser.desktop"
+NEW="/var/lib/snapd/desktop/applications/chromium_chromium.desktop"
+OBJECTS=$(gsettings get org.mate.panel object-id-list 2> /dev/null)
+for object in $OBJECTS; do
+  object=$(echo $object | cut -d\' -f2)
+  launcher=$(gsettings get org.mate.panel.object:/org/mate/panel/objects/$object/ launcher-location)
+  if [ "$launcher" = "'$OLD'" ]; then
+    gsettings set org.mate.panel.object:/org/mate/panel/objects/$object/ launcher-location "'$NEW'"
+  fi
+done
+
+# KDE Plasma
+if which qdbus > /dev/null; then
+  SCRIPT="$(cat <<-EOF
+    for (var i = 0; i < panelIds.length; ++i) {
+      var panel = panelById(panelIds[i]);
+      var widgets = panel.widgets();
+      for (var j = 0; j < widgets.length; ++j) {
+        var widget = widgets[j];
+        if (widget.type == "org.kde.plasma.taskmanager") {
+          widget.currentConfigGroup = "General";
+          var launchers = widget.readConfig("launchers");
+          if (launchers.includes("chromium-browser.desktop")) {
+            widget.writeConfig("launchers", launchers.replace(/chromium-browser.desktop/g, "chromium_chromium.desktop"));
+          }
+        }
+      }
+    }
+EOF
+  )"
+  qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$SCRIPT" 2> /dev/null
+fi
+
+# TODO: handle other desktop environments
+
+exec /snap/bin/chromium "$@"
