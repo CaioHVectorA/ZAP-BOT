@@ -21,7 +21,7 @@ const downloadImage = require("./utilities/DownloadImage");
 
 const client = new Client({
   puppeteer: {
-    executablePath: "./chromium-browser",
+    executablePath: "/usr/bin/chromium-browser",
     // headless: false,
     args: ["--no-sandbox"],
   },
