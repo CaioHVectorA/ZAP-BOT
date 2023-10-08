@@ -22,7 +22,7 @@ const downloadImage = require("./utilities/DownloadImage");
 const client = new Client({
   puppeteer: {
     executablePath: "/usr/bin/chromium-browser",
-    headless: false,
+    //headless: false,
     args: ["--no-sandbox","--disable-setuid-sandbox"],
   },
   // authStrategy: new LocalAuth()
